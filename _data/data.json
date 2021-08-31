@@ -1,0 +1,39 @@
+{
+  "Pennsylvania":{
+    "Chester":{
+      "Democrats":{
+        "Humphrey ":100,
+        "McGovern":50
+      },
+      "Republicans":{
+        "Nixon":200,
+        "Ashbrook":2,
+        "McCloskey":1
+      }
+    },
+    "Broward":{
+      "Democrats":{
+        "McLaren":500,
+        "Todd":2,
+        "Ellis":40
+      },
+      "Republicans":{
+        "Filipe": 20,
+        "Jones": 890,
+        "Poindexter":1000
+      }
+    }
+  },
+  "Maryland":{
+    "Baltimore":{
+      "Democrats":{
+        "Holland":23,
+        "Fortunado":800
+      },
+      "Republicans":{
+        "Heller":2,
+        "Gonzales":50
+      }
+    }
+  }
+}
