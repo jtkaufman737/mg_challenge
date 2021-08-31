@@ -1,0 +1,38 @@
+{
+  "New Mexico":{
+    "Window Rock":{
+      "Democrats":{
+        "Tsosie":1444,
+        "Miller":5
+      },
+      "Republicans":{
+        "Rodriguez":2000,
+        "Patel":2344
+      }
+    },
+    "Pistora":{
+      "Democrats":{
+        "Grayson":50,
+        "Feinberg":239,
+        "White":40
+      },
+      "Republicans":{
+        "Jackson": 20,
+        "Dee": 8490,
+        "Jones":2323
+      }
+    }
+  },
+  "North Carolina":{
+    "Guilford":{
+      "Democrats":{
+        "LeSalle":23,
+        "Kim":800
+      },
+      "Republicans":{
+        "Nez":28889,
+        "Auburn":50
+      }
+    }
+  }
+}
