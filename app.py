@@ -41,7 +41,7 @@ def index():
     except Exception as e:
         election_data = {
             "statusCode": 500,
-            "status": "Internal server error - bad data file",
+            "status": "Internal server error",
         }
 
     # interpolates JSON to basic HTML skeleton for API styling
@@ -50,14 +50,18 @@ def index():
     <html>
         <head>
             <link rel="stylesheet" href="https://unpkg.com/wingcss"/>
+            <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.2.0/styles/default.min.css">
+            <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.2.0/highlight.min.js"></script>
         </head>
         <body style="margin:10%">
             <h3>{endpoint_display_name}</h3>
                 <pre>
-                    <code>
-                        {json.dumps(election_data)}
-                    </code>
+                    <code class="prettyprint" id="json" style="white-space: pre-line;"></code>
                 </pre>
         </body>
+        <script>
+          document.getElementById('json').textContent = JSON.stringify({election_data});
+          hljs.highlightAll();
+        </script>
     </html>
     """

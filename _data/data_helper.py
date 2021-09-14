@@ -18,43 +18,42 @@ class DataHelper:
         except Exception as e:
             raise Exception("Internal Server Error - corrupted or missing data source")
 
-    def flatten_county_results(self, data) -> dict:
+
+    def flatten_results(self, data) -> dict:
         """
-        Handles request for county level primary data, flattening data
-        structure for later logic that determines winners. Reformats county
-        name to include state for clarity
-        """
-        results = {}
-
-        for state in self.election_data:
-            for county in self.election_data[state]:
-                results[f"{county}, {state}"] = self.election_data[state][county]
-
-        return results
-
-    def flatten_state_results(self, data) -> dict:
-        """
-        Collapses state results from distinct counties into only two child objects
-        for democrat and republican contenders
-
-        TODO brittle, would not handle third party candidates yet
+        Organizes all county information at the top level and creates state key on
+        county objects
         """
         results = {}
 
-        for state in self.election_data:
-            if not state in results:
-                # create state entry for new state
-                results[state] = {"Democrats": {}, "Republicans": {}}
-
-            for county in self.election_data[state]:
-                results[state]["Democrats"].update(
-                    self.election_data[state][county]["Democrats"]
-                )
-                results[state]["Republicans"].update(
-                    self.election_data[state][county]["Republicans"]
-                )
+        # O(n^2), can't see how to avoid it
+        for state in data:
+            for county in data[state]:
+                results[f"{county}, {state}"] = data[state][county]
 
         return results
+
+
+    def group_state_results(self, data) -> dict:
+        """
+        Recreates state results ONLY if that format is requested
+        """
+        results = {}
+
+        for locality in data:
+            state = locality.split(",")[1].strip()
+
+            if state in results:
+                results[state]["Democrats"].update(data[locality]["Democrats"])
+                results[state]["Republicans"].update(data[locality]["Republicans"])
+            else:
+                results[state] = {
+                    "Democrats": data[locality]["Democrats"],
+                    "Republicans": data[locality]["Republicans"]
+                }
+
+        return results
+
 
     def process_winners(self, filtered_data) -> dict:
         """
@@ -97,24 +96,27 @@ class DataHelper:
         parameters. Works off a copy of election data in case we may want to avoid mutating it
         for future added functionality
         """
-        filtered_data = self.election_data.copy()
+
+        data = self.election_data.copy()
+        flattened_data = self.flatten_results(data)
 
         if "level" in self.params:
             if self.params["level"] == "county":
-                filtered_data = self.flatten_county_results(filtered_data)
+                filtered_data = self.process_winners(flattened_data)
             elif self.params["level"] == "state":
-                filtered_data = self.flatten_state_results(filtered_data)
+                filtered_data = self.process_winners(
+                    self.group_state_results(flattened_data)
+                )
             else:
                 return {
                     "statusCode": 400,
                     "status": "Bad Request - valid parameters are: county, state",
                 }
-
-            filtered_data = self.process_winners(filtered_data)
         else:
             # form full dictionary of all state and locality primary winners
-            county = self.process_winners(self.flatten_county_results(filtered_data))
-            state = self.process_winners(self.flatten_state_results(filtered_data))
+            county = self.process_winners(flattened_data)
+            self.group_state_results(flattened_data)
+            state = self.process_winners(self.group_state_results(flattened_data))
             filtered_data = county | state
 
         return filtered_data
